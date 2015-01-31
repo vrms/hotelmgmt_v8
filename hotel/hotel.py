@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-##############################################################################
+###############################################################################
 #
 #    OpenERP, Open Source Management Solution
 #    Copyright (C) 2012-Today Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>)
@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
-##############################################################################
+###############################################################################
 
 from openerp.osv import fields, osv
 import time
@@ -47,7 +47,13 @@ class hotel_room_type(osv.Model):
     _inherits = {'product.category': 'cat_id'}
     _description = "Room Type"
     _columns = {
-        'cat_id': fields.many2one('product.category', 'category', required=True, select=True, ondelete='cascade'),
+        'cat_id': fields.many2one(
+            'product.category',
+            'category',
+            required=True,
+            select=True,
+            ondelete='cascade'
+            ),
     }
     _defaults = {
         'isroomtype': 1,
@@ -66,7 +72,12 @@ class hotel_room_amenities_type(osv.Model):
     _description = 'amenities Type'
     _inherits = {'product.category':'cat_id'}
     _columns = {
-        'cat_id':fields.many2one('product.category', 'category', required=True, ondelete='cascade'),
+        'cat_id':fields.many2one(
+            'product.category',
+            'category',
+            required=True,
+            ondelete='cascade'
+            ),
     }
     _defaults = {
         'isamenitytype': 1,
@@ -77,8 +88,16 @@ class hotel_room_amenities(osv.Model):
     _description = 'Room amenities'
     _inherits = {'product.product':'room_categ_id'}
     _columns = {
-        'room_categ_id':fields.many2one('product.product', 'Product Category', required=True, ondelete='cascade'),
-        'rcateg_id':fields.many2one('hotel.room.amenities.type', 'Amenity Catagory'),
+        'room_categ_id':fields.many2one(
+            'product.product',
+            'Product Category',
+            required=True,
+            ondelete='cascade'
+            ),
+        'rcateg_id':fields.many2one(
+            'hotel.room.amenities.type', 
+            'Amenity Catagory'
+            ),
     }
     _defaults = {
         'iscategid': 1,
@@ -91,11 +110,27 @@ class hotel_room(osv.Model):
     _description = 'Hotel Room'
 
     _columns = {
-        'product_id': fields.many2one('product.product', 'Product_id', required=True, ondelete='cascade'),
-        'floor_id':fields.many2one('hotel.floor', 'Floor No', help='At which floor the room is located.'),
+        'product_id': fields.many2one(
+            'product.product',
+            'Product_id',
+            required=True,
+            ondelete='cascade'
+            ),
+        'floor_id':fields.many2one(
+            'hotel.floor',
+            'Floor No',
+            help='At which floor the room is located.'
+            ),
         'max_adult':fields.integer('Max Adult'),
         'max_child':fields.integer('Max Child'),
-        'room_amenities':fields.many2many('hotel.room.amenities', 'temp_tab', 'room_amenities', 'rcateg_id', 'Room Amenities', help='List of room amenities. '),
+        'room_amenities':fields.many2many(
+            'hotel.room.amenities',
+            'temp_tab',
+            'room_amenities',
+            'rcateg_id',
+            'Room Amenities',
+            help='List of room amenities.'
+            ),
         'status':fields.selection([('available', 'Available'), ('occupied', 'Occupied')], 'Status'),
 #         'room_rent_ids':fields.one2many('room.rent', 'rent_id', 'Room Rent'),
     }
@@ -145,20 +180,70 @@ class hotel_folio(osv.Model):
     _order = 'id desc'
     _columns = {
       'name': fields.char('Folio Number', size=24, readonly=True),
-      'order_id': fields.many2one('sale.order', 'Order', required=True, ondelete='cascade'),
-      'checkin_date': fields.datetime('Check In', required=True, readonly=True, states={'draft':[('readonly', False)]}),
-      'checkout_date': fields.datetime('Check Out', required=True, readonly=True, states={'draft':[('readonly', False)]}),
-      'room_lines': fields.one2many('hotel.folio.line', 'folio_id', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="Hotel room reservation detail."),
-      'service_lines': fields.one2many('hotel.service.line', 'folio_id', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="Hotel services detail provide to customer and it will include in main Invoice."),
-      'hotel_policy': fields.selection([('prepaid', 'On Booking'), ('manual', 'On Check In'), ('picking', 'On Checkout')], 'Hotel Policy', help="Hotel policy for payment that either the guest has to payment at booking time or check-in check-out time."),
-      'duration': fields.float('Duration in Days', readonly=True, help="Number of days which will automatically count from the check-in and check-out date. "),
+      'order_id': fields.many2one(
+          'sale.order',
+          'Order',
+          required=True,
+          ondelete='cascade'
+          ),
+      'checkin_date': fields.datetime(
+          'Check In',
+          required=True,
+          readonly=True,
+          states={'draft':[('readonly', False)]}
+          ),
+      'checkout_date': fields.datetime(
+          'Check Out',
+          required=True,
+          readonly=True,
+          states={'draft':[('readonly', False)]}
+          ),
+      'room_lines': fields.one2many(
+          'hotel.folio.line',
+          'folio_id',
+          readonly=True,
+          states={'draft': [('readonly', False)],
+          'sent': [('readonly', False)]},
+          help="Hotel room reservation detail."
+          ),
+      'service_lines': fields.one2many(
+          'hotel.service.line',
+          'folio_id',
+          readonly=True,
+          states={'draft': [('readonly', False)],
+          'sent': [('readonly', False)]},
+          help="Hotel services detail provide to customer and it will \
+          include in main Invoice."
+          ),
+      'hotel_policy': fields.selection(
+          [('prepaid', 'On Booking'),
+          ('manual', 'On Check In'),
+          ('picking', 'On Checkout')],
+          'Hotel Policy',
+          help="Hotel policy for payment that either the guest has to \
+          pay at booking time, check-in or check-out time."
+          ),
+      'duration': fields.float(
+          'Duration in Days',
+          readonly=True,
+          help="Number of days which will automatically count from the \
+          check-in and check-out date. "
+          ),
     }
     _defaults = {
-      'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'hotel.folio'),
+      'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(
+          cr,
+          uid,
+          'hotel.folio'
+          ),
       'hotel_policy':'manual'
     }
     _sql_constraints = [
-        ('check_in_out', 'CHECK (checkin_date<=checkout_date)', 'Check in Date Should be less than the Check Out Date!'),
+        (
+            'check_in_out',
+            'CHECK (checkin_date<=checkout_date)',
+            'Check in Date Should be less than the Check Out Date!'
+        ),
     ]
 
     def _check_room_vacant(self, cr, uid, ids, context=None):
@@ -171,11 +256,15 @@ class hotel_folio(osv.Model):
         return True
 
     _constraints = [
-        (_check_room_vacant, 'You cannot allocate the same room twice!', ['room_lines'])
+        (
+            _check_room_vacant, 'You cannot allocate the same room twice!', 
+            ['room_lines']
+            )
     ]
 
-    def onchange_dates(self, cr, uid, ids, checkin_date=False, checkout_date=False, duration=False):
-        # This mathod gives the duration between check in checkout if customer will leave only for some hour it would be considers as
+    def onchange_dates(self, cr, uid, ids, checkin_date=False, checkout_date=False, \
+    duration=False):
+        # This method gives the duration between check in checkout if customer will leave only for some hour it would be considers as
         # a whole day. If customer will checkin checkout for more or equal hours , which configured in company as additional hours than
         # it would be consider as full day
         value = {}
@@ -359,8 +448,17 @@ class hotel_folio_line(osv.Model):
     _description = 'hotel folio1 room line'
     _inherits = {'sale.order.line':'order_line_id'}
     _columns = {
-        'order_line_id': fields.many2one('sale.order.line', 'Order Line', required=True, ondelete='cascade'),
-        'folio_id': fields.many2one('hotel.folio', 'Folio', ondelete='cascade'),
+        'order_line_id': fields.many2one(
+            'sale.order.line',
+            'Order Line',
+            required=True,
+            ondelete='cascade'
+            ),
+        'folio_id': fields.many2one(
+            'hotel.folio',
+            'Folio',
+            ondelete='cascade'
+            ),
         'checkin_date': fields.datetime('Check In', required=True),
         'checkout_date': fields.datetime('Check Out', required=True),
     }
@@ -384,15 +482,19 @@ class hotel_folio_line(osv.Model):
 
     def uos_change(self, cr, uid, ids, product_uos, product_uos_qty=0, product_id=None):
         line_ids = [folio.order_line_id.id for folio in self.browse(cr, uid, ids)]
-        return  self.pool.get('sale.order.line').uos_change(cr, uid, line_ids, product_uos, product_uos_qty=0, product_id=None)
+        return  self.pool.get('sale.order.line').uos_change(
+            cr, uid, line_ids, product_uos, product_uos_qty=0, product_id=None
+            )
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
             lang=False, update_tax=True, date_order=False):
         line_ids = [folio.order_line_id.id for folio in self.browse(cr, uid, ids)]
-        return self.pool.get('sale.order.line').product_id_change(cr, uid, line_ids, pricelist, product, qty=0,
+        return self.pool.get('sale.order.line').product_id_change(
+            cr, uid, line_ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=partner_id,
-            lang=False, update_tax=True, date_order=False)
+            lang=False, update_tax=True, date_order=False
+            )
 
     def product_uom_change(self, cursor, user, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
@@ -418,41 +520,67 @@ class hotel_folio_line(osv.Model):
 
     def button_confirm(self, cr, uid, ids, context=None):
         line_ids = [folio.order_line_id.id for folio in self.browse(cr, uid, ids)]
-        return self.pool.get('sale.order.line').button_confirm(cr, uid, line_ids, context=context)
+        return self.pool.get('sale.order.line').button_confirm(
+            cr, uid, line_ids, context=context
+            )
 
     def button_done(self, cr, uid, ids, context=None):
         line_ids = [folio.order_line_id.id for folio in self.browse(cr, uid, ids)]
-        res = self.pool.get('sale.order.line').button_done(cr, uid, line_ids, context=context)
+        res = self.pool.get('sale.order.line').button_done(
+            cr, uid, line_ids, context=context
+            )
         wf_service = netsvc.LocalService("workflow")
         res = self.write(cr, uid, ids, {'state':'done'})
         for line in self.browse(cr, uid, ids, context):
-            wf_service.trg_write(uid, 'sale.order', line.order_line_id.order_id.id, cr)
+            wf_service.trg_write(
+                uid,
+                'sale.order',
+                line.order_line_id.order_id.id,
+                cr
+                )
         return res
 
     def copy_data(self, cr, uid, id, default=None, context=None):
         line_id = self.browse(cr, uid, id).order_line_id.id
-        return self.pool.get('sale.order.line').copy_data(cr, uid, line_id, default=None, context=context)
+        return self.pool.get('sale.order.line').copy_data(
+            cr, uid, line_id, default=None, context=context
+            )
 
 class hotel_service_line(osv.Model):
 
     def copy(self, cr, uid, id, default=None, context=None):
         line_id = self.browse(cr, uid, id).service_line_id.id
-        return self.pool.get('sale.order.line').copy(cr, uid, line_id, default=None, context=context)
+        return self.pool.get('sale.order.line').copy(
+            cr, uid, line_id, default=None, context=context
+            )
 
     def _amount_line(self, cr, uid, ids, field_name, arg, context):
         line_ids = [folio.service_line_id.id for folio in self.browse(cr, uid, ids)]
-        return  self.pool.get('sale.order.line')._amount_line(cr, uid, line_ids, field_name, arg, context)
+        return  self.pool.get('sale.order.line')._amount_line(
+            cr, uid, line_ids, field_name, arg, context
+            )
 
     def _number_packages(self, cr, uid, ids, field_name, arg, context):
         line_ids = [folio.service_line_id.id for folio in self.browse(cr, uid, ids)]
-        return self.pool.get('sale.order.line')._number_packages(cr, uid, line_ids, field_name, arg, context)
+        return self.pool.get('sale.order.line')._number_packages(
+            cr, uid, line_ids, field_name, arg, context
+            )
 
     _name = 'hotel.service.line'
     _description = 'hotel Service line'
     _inherits = {'sale.order.line':'service_line_id'}
     _columns = {
-        'service_line_id': fields.many2one('sale.order.line', 'Service Line', required=True, ondelete='cascade'),
-        'folio_id': fields.many2one('hotel.folio', 'Folio', ondelete='cascade'),
+        'service_line_id': fields.many2one(
+            'sale.order.line',
+            'Service Line',
+            required=True,
+            ondelete='cascade'
+            ),
+        'folio_id': fields.many2one(
+            'hotel.folio',
+            'Folio',
+            ondelete='cascade'
+            ),
     }
 
     def create(self, cr, uid, vals, context=None, check=True):
@@ -492,7 +620,11 @@ class hotel_service_line(osv.Model):
         if checkout_date < checkin_date:
             raise osv.except_osv(_('Error !'), _('Checkout must be greater or equal checkin date'))
         if checkin_date:
-            diffDate = datetime.datetime(*time.strptime(checkout_date, '%Y-%m-%d %H:%M:%S')[:5]) - datetime.datetime(*time.strptime(checkin_date, '%Y-%m-%d %H:%M:%S')[:5])
+            diffDate = datetime.datetime(
+                *time.strptime(checkout_date,
+                '%Y-%m-%d %H:%M:%S')[:5]) - datetime.datetime(*time.strptime(checkin_date,
+                '%Y-%m-%d %H:%M:%S')[:5]
+                )
             qty = diffDate.days
         return {'value':{'product_uom_qty':qty}}
 
@@ -518,7 +650,13 @@ class hotel_service_type(osv.Model):
     _inherits = {'product.category':'ser_id'}
     _description = "Service Type"
     _columns = {
-        'ser_id':fields.many2one('product.category', 'category', required=True, select=True, ondelete='cascade'),
+        'ser_id':fields.many2one(
+            'product.category',
+            'category',
+            required=True,
+            select=True,
+            ondelete='cascade'
+            ),
     }
     _defaults = {
         'isservicetype': 1,
@@ -529,7 +667,12 @@ class hotel_services(osv.Model):
     _description = 'Hotel Services and its charges'
     _inherits = {'product.product':'service_id'}
     _columns = {
-        'service_id': fields.many2one('product.product', 'Service_id', required=True, ondelete='cascade'),
+        'service_id': fields.many2one(
+            'product.product',
+            'Service_id',
+            required=True,
+            ondelete='cascade'
+            ),
     }
     _defaults = {
         'isservice': 1,
@@ -538,7 +681,13 @@ class hotel_services(osv.Model):
 class res_company(osv.Model):
     _inherit = 'res.company'
     _columns = {
-        'additional_hours': fields.integer('Additional Hours', help="Provide the min hours value for check in, checkout days, whatever the hours will be provided here based on that extra days will be calculated."),
+        'additional_hours': fields.integer(
+            'Additional Hours',
+            help="Provide the min hours value for check in,
+            checkout days,
+            whatever the hours will be provided here based on that extra \
+            days will be calculated."
+            ),
     }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
